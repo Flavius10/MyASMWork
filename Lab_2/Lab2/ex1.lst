@@ -1,0 +1,21 @@
+     1                                  bits 32 
+     2                                  global start        
+     3                                  
+     4                                  
+     5                                  extern exit, printf             
+     6                                  import exit msvcrt.dll    
+     7                                  import printf msvcrt.dll    
+     8                                  segment data use32 class=data
+     9                                  
+    10                                  segment code use32 class=code
+    11                                      start:
+    12                                          
+    13 00000000 31C0                            xor eax, eax
+    14 00000002 31DB                            xor ebx, ebx
+    15                                          
+    16 00000004 B8FEFFFFFF                      mov eax, -2
+    17 00000009 BBFFFFFFFF                      mov ebx, -1
+    18 0000000E F6F3                            div bl
+    19                                          
+    20 00000010 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    21 00000012 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

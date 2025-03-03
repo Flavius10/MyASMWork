@@ -1,0 +1,74 @@
+     1                                  ; Se dau octetul A si cuvantul B. Sa se obtina dublucuvantul C:
+     2                                  
+     3                                      ; bitii 0-7 ai lui C au valoarea 1
+     4                                      ; bitii 8-11 ai lui C coincid cu bitii 4-7 ai lui A
+     5                                      ; bitii 12-19 coincid cu bitii 2-9 ai lui B
+     6                                      ; bitii 20-23 coincid cu bitii 0-3 ai lui A
+     7                                      ; bitii 24-31 coincid cu octetului high din cuvantul B
+     8                                  
+     9                                  
+    10                                  bits 32 
+    11                                  global start        
+    12                                  
+    13                                  
+    14                                  extern exit, printf               
+    15                                  import exit msvcrt.dll    
+    16                                  import printf msvcrt.dll    
+    17                                  segment data use32 class=data
+    18                                      
+    19 00000000 95                          a db 10010101b 
+    20 00000001 5AB5                        b dw 1011010101011010b
+    21                                      
+    22 00000003 00000000                    c dd 0   ; 1011010101010101 0110100111111111
+    23                                      
+    24 00000007 52657A756C74617475-         print_frm db "Rezultatul este: %u", 0
+    24 00000010 6C20657374653A2025-
+    24 00000019 7500               
+    25                                      
+    26                                  segment code use32 class=code
+    27                                  start:
+    28                                  
+    29 00000000 31C0                        xor eax, eax
+    30 00000002 31DB                        xor ebx, ebx ; aici vom salva valoarea lui C
+    31 00000004 31D2                        xor edx, edx
+    32 00000006 31C9                        xor ecx, ecx
+    33                                      
+    34 00000008 81CBFF000000                or ebx, 11111111b
+    35                                      
+    36                                      ; bitii 8-11 ai lui C coincid cu bitii 4-7 ai lui A
+    37 0000000E A0[00000000]                mov al, [a]
+    38 00000013 6625F000                    and ax, 11110000b
+    39 00000017 66C1E004                    shl ax, 4
+    40 0000001B 09C3                        or ebx, eax
+    41                                      
+    42                                      ; bitii 12-19 coincid cu bitii 2-9 ai lui B
+    43 0000001D 31C0                        xor eax, eax
+    44 0000001F 66A1[01000000]              mov ax, [b]
+    45 00000025 6625FC03                    and ax, 0000001111111100b
+    46 00000029 C1E00A                      shl eax, 10
+    47 0000002C 09C3                        or ebx, eax
+    48                                      
+    49                                      ; bitii 20-23 coincid cu bitii 0-3 ai lui A
+    50 0000002E 31C0                        xor eax, eax
+    51 00000030 A0[00000000]                mov al, [a]
+    52 00000035 240F                        and al, 00001111b
+    53 00000037 C1E014                      shl eax, 20
+    54 0000003A 09C3                        or ebx, eax
+    55                                      
+    56                                      ; bitii 24-31 coincid cu octetului high din cuvantul B
+    57                                      
+    58 0000003C 31C0                        xor eax, eax
+    59 0000003E 66A1[01000000]              mov ax, [b]
+    60 00000044 662500FF                    and ax, 1111111100000000b
+    61 00000048 C1E010                      shl eax, 16
+    62 0000004B 09C3                        or ebx, eax
+    63                                      
+    64 0000004D 891D[03000000]              mov [c], ebx
+    65                                      
+    66 00000053 53                          push ebx
+    67 00000054 68[07000000]                push print_frm
+    68 00000059 FF15[00000000]              call [printf]
+    69 0000005F 83C408                      add esp, 2 * 4
+    70                                     
+    71 00000062 6A00                        push    dword 0
+    72 00000064 FF15[00000000]              call    [exit]

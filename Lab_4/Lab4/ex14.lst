@@ -1,0 +1,67 @@
+     1                                  ;Se da dublucuvantul A. Sa se obtina numarul intreg n reprezentat de bitii 14-17 ai lui A. Sa se obtina apoi in B dublucuvantul rezultat prin rotirea spre stanga a lui A cu n pozitii. Sa se obtina apoi octet C astfe
+     2                                  
+     3                                  ;    bitii 0-5 ai lui C coincid cu bitii 1-6 ai lui B
+     4                                  ;    bitii 6-7 ai lui C coincid cu bitii 17-18 ai lui B
+     5                                  
+     6                                  bits 32 
+     7                                  global start        
+     8                                  
+     9                                  extern exit, printf               
+    10                                  import exit msvcrt.dll    
+    11                                  import printf msvcrt.dll    
+    12                                  segment data use32 class=data
+    13                                  
+    14 00000000 4A29A5AA                    A dd 10101010101001010010100101001010b
+    15                                      ;                  111100000000000000b
+    16 00000004 00                          n db 0
+    17 00000005 00000000                    B dd 0
+    18 00000009 00                          C db 0
+    19                                      
+    20 0000000A 52657A756C74617475-         print_frm db "Rezultatul este: %u", 0
+    20 00000013 6C20657374653A2025-
+    20 0000001C 7500               
+    21                                      
+    22                                  segment code use32 class=code
+    23                                  start:
+    24                                     
+    25 00000000 31C0                        xor eax, eax
+    26 00000002 31DB                        xor ebx, ebx
+    27 00000004 31C9                        xor ecx, ecx
+    28 00000006 31D2                        xor edx, edx
+    29                                      
+    30 00000008 A1[00000000]                mov eax, [A]
+    31 0000000D 2500C00300                  and eax, 00000000000000111100000000000000b
+    32 00000012 C1E80E                      shr eax, 14
+    33 00000015 A2[04000000]                mov [n], al
+    34                                      
+    35 0000001A 31C0                        xor eax, eax
+    36 0000001C A1[00000000]                mov eax, [A]
+    37 00000021 8A0D[04000000]              mov cl, [n]
+    38 00000027 D3E0                        shl eax, cl
+    39 00000029 A3[05000000]                mov [B], eax
+    40                                      
+    41 0000002E 31C0                        xor eax, eax
+    42 00000030 A1[05000000]                mov eax, [B]
+    43 00000035 247E                        and al, 01111110b
+    44 00000037 D0E8                        shr al, 1
+    45 00000039 08C3                        or bl, al
+    46                                      
+    47 0000003B 31C0                        xor eax, eax
+    48 0000003D A1[05000000]                mov eax, [B]
+    49 00000042 2500000600                  and eax, 1100000000000000000b
+    50 00000047 C1E80B                      shr eax, 11
+    51 0000004A 08C3                        or bl, al
+    52                                      
+    53 0000004C 881D[09000000]              mov [C], bl
+    54 00000052 31C0                        xor eax, eax
+    55 00000054 A0[09000000]                mov al, [C]
+    56                                      
+    57 00000059 50                          push eax
+    58 0000005A 68[0A000000]                push print_frm
+    59 0000005F FF15[00000000]              call [printf]
+    60 00000065 83C408                      add esp, 2 * 4
+    61                                      
+    62                                     
+    63 00000068 6A00                        push    dword 0      ; push the parameter for exit onto the stack
+    64 0000006A FF15[00000000]              call    [exit]       ; call exit to terminate the program
+    65                                   

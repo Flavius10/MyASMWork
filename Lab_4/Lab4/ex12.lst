@@ -1,0 +1,63 @@
+     1                                  ;Se dau doua cuvinte A si B. Sa se obtina dublucuvantul C:
+     2                                  
+     3                                  ;    bitii 0-6 ai lui C au valoarea 0
+     4                                  ;    bitii 7-9 ai lui C coincid cu bitii 0-2 ai lui A
+     5                                  ;    bitii 10-15 ai lui C coincid cu bitii 8-13 ai lui B
+     6                                  ;    bitii 16-31 ai lui C au valoarea 1 
+     7                                  
+     8                                  bits 32 
+     9                                  global start        
+    10                                  
+    11                                  
+    12                                  extern exit, printf               
+    13                                  import exit msvcrt.dll    
+    14                                  import printf msvcrt.dll    
+    15                                  segment data use32 class=data
+    16                                  
+    17 00000000 9BAA                        A dw 1010101010011011b
+    18 00000002 4A95                        B dw 1001010101001010b
+    19                                      
+    20 00000004 00000000                    C dd 0 ; 1111111111111111 0101010110000000
+    21                                      
+    22 00000008 52657A756C74617475-         print_frm db "Rezultatul este: %u", 0
+    22 00000011 6C20657374653A2025-
+    22 0000001A 7500               
+    23                                      
+    24                                  segment code use32 class=code
+    25                                  start:
+    26                                     
+    27 00000000 31C0                        xor eax, eax
+    28 00000002 31DB                        xor ebx, ebx
+    29 00000004 31C9                        xor ecx, ecx
+    30 00000006 31D2                        xor edx, edx
+    31                                      
+    32                                      ;bitii 7-9 ai lui C coincid cu bitii 0-2 ai lui A
+    33 00000008 66A1[00000000]              mov ax, [A]
+    34 0000000E 6683E007                    and ax, 0000000000000111b
+    35 00000012 C1E007                      shl eax, 7
+    36 00000015 09C3                        or ebx, eax
+    37                                      
+    38                                      ;bitii 10-15 ai lui C coincid cu bitii 8-13 ai lui B
+    39 00000017 31C0                        xor eax, eax
+    40 00000019 66A1[02000000]              mov ax, [B]
+    41 0000001F 6625003F                    and ax, 0011111100000000b
+    42 00000023 B102                        mov cl, 2
+    43 00000025 D3E0                        shl eax, cl
+    44 00000027 09C3                        or ebx, eax
+    45                                      
+    46                                      ;bitii 16-31 ai lui C au valoarea 1
+    47 00000029 31C0                        xor eax, eax
+    48 0000002B B8FFFF0000                  mov eax, 1111111111111111b
+    49 00000030 C1E010                      shl eax, 16
+    50 00000033 09C3                        or ebx, eax
+    51                                      
+    52 00000035 891D[04000000]              mov [C], ebx
+    53                                      
+    54 0000003B FF35[04000000]              push dword [C]
+    55 00000041 68[08000000]                push print_frm
+    56 00000046 FF15[00000000]              call [printf]
+    57 0000004C 83C408                      add esp, 2 * 4
+    58                                      
+    59                                     
+    60 0000004F 6A00                        push    dword 0      ; push the parameter for exit onto the stack
+    61 00000051 FF15[00000000]              call    [exit]       ; call exit to terminate the program

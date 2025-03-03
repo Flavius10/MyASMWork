@@ -1,0 +1,35 @@
+     1                                  ;3*4 
+     2                                  
+     3                                  bits 32 
+     4                                  
+     5                                  global start        
+     6                                  
+     7                                  extern exit, printf              
+     8                                  import exit msvcrt.dll    
+     9                                  import printf msvcrt.dll    
+    10                                      
+    11                                  
+    12                                  segment data use32 class=data
+    13 00000000 04                          a db 4
+    14 00000001 03                          b db 3
+    15                                      
+    16 00000002 52657A756C6174756C-         print_frm db "Rezulatul este: % d", 0
+    16 0000000B 20657374653A202520-
+    16 00000014 6400               
+    17                                    
+    18                                  segment code use32 class=code
+    19                                  start:
+    20                                  
+    21 00000000 A0[00000000]                mov al, [a]
+    22 00000005 F625[01000000]              mul byte [b]
+    23                                      
+    24 0000000B 6698                        cbw
+    25 0000000D 98                          cwde
+    26                                      
+    27 0000000E 50                          push eax
+    28 0000000F 68[02000000]                push print_frm
+    29 00000014 FF15[00000000]              call[printf]
+    30 0000001A 83C408                      add esp, 2 * 4
+    31                                    
+    32 0000001D 6A00                        push    dword 0      ; push the parameter for exit onto the stack
+    33 0000001F FF15[00000000]              call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,85 @@
+     1                                  ; 3*[20*(b-a+2)-10*c]+2*(d-3) 
+     2                                  ; a,b,c - byte, d - word
+     3                                  
+     4                                  bits 32 
+     5                                  
+     6                                  global start        
+     7                                  
+     8                                  extern exit, printf              
+     9                                  import exit msvcrt.dll    
+    10                                  import printf msvcrt.dll    
+    11                                      
+    12                                  
+    13                                  segment data use32 class=data
+    14 00000000 04                          a db 4
+    15 00000001 06                          b db 6
+    16 00000002 02                          c db 2
+    17 00000003 0400                        d dw 4
+    18                                      
+    19 00000005 52657A756C6174756C-         print_frm db "Rezulatul este: %d", 0
+    19 0000000E 20657374653A202564-
+    19 00000017 00                 
+    20                                    
+    21                                  segment code use32 class=code
+    22                                  start:
+    23                                  
+    24 00000000 31C0                        xor eax, eax
+    25 00000002 31DB                        xor ebx, ebx
+    26 00000004 31C9                        xor ecx, ecx
+    27 00000006 31D2                        xor edx, edx
+    28                                      
+    29 00000008 A0[01000000]                mov al, [b]
+    30 0000000D 1A05[00000000]              sbb al, [a]
+    31 00000013 0402                        add al, 2
+    32                                      
+    33 00000015 B314                        mov bl, 20  
+    34 00000017 F6E3                        mul bl   ; ax = 20*(b-a+2)
+    35                                      
+    36 00000019 31DB                        xor ebx, ebx
+    37 0000001B 6689C3                      mov bx, ax
+    38 0000001E 31C0                        xor eax, eax
+    39                                      
+    40 00000020 A0[02000000]                mov al, [c]
+    41 00000025 B20A                        mov dl, 10
+    42 00000027 F6E2                        mul dl ; ax = 10*c
+    43                                      
+    44 00000029 6619C3                      sbb bx, ax
+    45                                      
+    46 0000002C 31C0                        xor eax, eax
+    47 0000002E 6689D8                      mov ax, bx ; ax = 20*(b-a+2)-10*c
+    48 00000031 31DB                        xor ebx, ebx
+    49                                      
+    50 00000033 66BB0300                    mov bx, 3
+    51 00000037 66F7E3                      mul bx  ; dx:ax = ax * bx
+    52                                      
+    53 0000003A 6652                        push dx
+    54 0000003C 6650                        push ax
+    55 0000003E 58                          pop eax
+    56                                      
+    57 0000003F 31DB                        xor ebx, ebx
+    58 00000041 31D2                        xor edx, edx
+    59                                      
+    60 00000043 89C3                        mov ebx, eax  ; edx = 3*[20*(b-a+2)-10*c]
+    61 00000045 31C0                        xor eax, eax
+    62                                      
+    63 00000047 66A1[03000000]              mov ax, [d]
+    64 0000004D 6683D803                    sbb ax, 3
+    65 00000051 66B90200                    mov cx, 2
+    66 00000055 66F7E1                      mul cx
+    67                                      
+    68 00000058 6652                        push dx
+    69 0000005A 6650                        push ax
+    70 0000005C 58                          pop eax
+    71                                      
+    72 0000005D 01C3                        add ebx, eax
+    73 0000005F 31C0                        xor eax, eax
+    74 00000061 89D8                        mov eax, ebx
+    75                                      
+    76 00000063 50                          push eax
+    77 00000064 68[05000000]                push print_frm
+    78 00000069 FF15[00000000]              call [printf]
+    79 0000006F 83C408                      add esp, 2 * 4
+    80                                      
+    81                                    
+    82 00000072 6A00                        push    dword 0      ; push the parameter for exit onto the stack
+    83 00000074 FF15[00000000]              call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,67 @@
+     1                                  ;Se dau cuvintele A si B. Se cere dublucuvantul C:
+     2                                  
+     3                                  ;    bitii 0-2 ai lui C au valoarea 0
+     4                                  ;    bitii 3-5 ai lui C au valoarea 1
+     5                                  ;    bitii 6-9 ai lui C coincid cu bitii 11-14 ai lui A
+     6                                  ;    bitii 10-15 ai lui C coincid cu bitii 1-6 ai lui B
+     7                                  ;    bitii 16-31 ai lui C au valoarea 1
+     8                                  
+     9                                  bits 32 
+    10                                  global start        
+    11                                  
+    12                                  
+    13                                  extern exit, printf               
+    14                                  import exit msvcrt.dll    
+    15                                  import printf msvcrt.dll    
+    16                                  segment data use32 class=data
+    17                                      
+    18 00000000 4695                        a dw 1001010101000110b 
+    19 00000002 5AB5                        b dw 1011010101011010b
+    20                                      
+    21 00000004 00000000                    c dd 0  ; 1111111111111111 1011010010111000
+    22                                              ;                          10111000
+    23                                      
+    24 00000008 52657A756C74617475-         print_frm db "Rezultatul este: %u", 0
+    24 00000011 6C20657374653A2025-
+    24 0000001A 7500               
+    25                                      
+    26                                  segment code use32 class=code
+    27                                  start:
+    28                                  
+    29 00000000 31C0                        xor eax, eax
+    30 00000002 31DB                        xor ebx, ebx ; aici vom salva valoarea lui C
+    31 00000004 31D2                        xor edx, edx
+    32 00000006 31C9                        xor ecx, ecx
+    33                                      
+    34                                      ; bitii 3-5 ai lui C au valoarea 1
+    35 00000008 83CB38                      or ebx, 00111000b
+    36                                      
+    37                                      ; bitii 6-9 ai lui C coincid cu bitii 11-14 ai lui A
+    38 0000000B 66A1[00000000]              mov ax, [a]
+    39 00000011 66250078                    and ax, 0111100000000000b
+    40 00000015 66C1E805                    shr ax, 5
+    41 00000019 09C3                        or ebx, eax
+    42                                      
+    43                                      ; bitii 10-15 ai lui C coincid cu bitii 1-6 ai lui B
+    44 0000001B 31C0                        xor eax, eax
+    45                                      
+    46 0000001D 66A1[02000000]              mov ax, [b]
+    47 00000023 6683E07E                    and ax, 0000000001111110b
+    48 00000027 66C1E009                    shl ax, 9
+    49 0000002B 09C3                        or ebx, eax
+    50                                      
+    51                                      ; bitii 16-31 ai lui C au valoarea 1
+    52 0000002D 31C0                        xor eax, eax
+    53 0000002F 66B8FFFF                    mov ax, 1111111111111111b
+    54 00000033 C1E010                      shl eax, 16
+    55 00000036 09C3                        or ebx, eax
+    56                                      
+    57 00000038 891D[04000000]              mov [c], ebx
+    58                                      
+    59 0000003E 53                          push ebx
+    60 0000003F 68[08000000]                push print_frm
+    61 00000044 FF15[00000000]              call [printf]
+    62 0000004A 83C408                      add esp, 2 * 4
+    63                                      
+    64 0000004D 6A00                        push    dword 0
+    65 0000004F FF15[00000000]              call    [exit]

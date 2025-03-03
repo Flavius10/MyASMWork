@@ -1,0 +1,40 @@
+     1                                  ; Sa se inlocuiasca bitii 0-3 ai octetului B cu bitii 8-11 ai cuvantului A. 
+     2                                  
+     3                                  bits 32
+     4                                  global start        
+     5                                  
+     6                                  extern exit, printf              
+     7                                  import exit msvcrt.dll    
+     8                                  import printf msvcrt.dll    
+     9                                  
+    10                                  segment data use32 class=data
+    11                                      
+    12 00000000 45AD                        A dw 1010110101000101b
+    13 00000002 00                          B db 0 
+    14                                      
+    15 00000003 52657A756C74617475-         print_frm db 'Rezultatul este: %d', 0
+    15 0000000C 6C20657374653A2025-
+    15 00000015 6400               
+    16                                      
+    17                                  segment code use32 class=code
+    18                                  start:
+    19                                  
+    20 00000000 31C0                        xor eax, eax
+    21 00000002 31D2                        xor edx, edx
+    22 00000004 31DB                        xor ebx, ebx  ; aici se va salva C
+    23 00000006 31C9                        xor ecx, ecx 
+    24                                      
+    25 00000008 66A1[00000000]              mov ax, [A]
+    26 0000000E 6625000F                    and ax, 0000111100000000b
+    27 00000012 66C1C808                    ror ax, 8
+    28 00000016 6609C3                      or bx, ax  ; primii patru biti sunt bitii 8-11 a lui A
+    29                                      
+    30 00000019 31C0                        xor eax, eax
+    31 0000001B A0[02000000]                mov al, [B]
+    32 00000020 24F0                        and al, 11110000b
+    33 00000022 6609D8                      or ax, bx
+    34                                      
+    35 00000025 66A3[02000000]              mov [B], ax
+    36                                      
+    37 0000002B 6A00                        push    dword 0     
+    38 0000002D FF15[00000000]              call    [exit]

@@ -1,0 +1,74 @@
+ ; push cuvant1
+    ; push format_citire
+    ; call [scanf]
+    ; add esp, 2 * 4
+   
+    ; push cuvant2
+    ; push format_citire
+    ; call [scanf]
+    ; add esp, 2 * 4
+    
+    ; push cuvant1
+    ; push format_scriere
+    ; call [printf]
+    ; add esp, 2 * 4
+   
+    ; push cuvant2
+    ; push format_scriere
+    ; call [printf]
+    ; add esp, 2 * 4
+
+   
+    ; xor esi, esi
+    ; mov esi, cuvant1
+    ; xor ebx, ebx
+    
+    ; numara_litere_cuvant1:
+        ; xor eax, eax
+        ; mov al, [esi + ebx]
+        
+        ; cmp al, 0              
+        ; je urmatorul_cuvant1   
+        
+        ; push eax
+        ; push format_scriere_litere
+        ; call [printf]
+        ; add esp, 2 * 4
+        
+        ; inc ebx                
+        ; jmp numara_litere_cuvant1
+
+    ; urmatorul_cuvant1:
+        
+        ; xor esi, esi
+        ; mov esi, cuvant2
+        ; xor edx, edx
+        
+        ; numara_litere_cuvant2:
+            ; xor eax, eax
+            ; mov al, [esi + edx]
+            
+            ; cmp al, 0              
+            ; je done_cuvinte       
+            
+            ; push eax
+            ; push format_scriere_litere
+            ; call [printf]
+            ; add esp, 2 * 4
+            
+            ; inc edx                
+            ; jmp numara_litere_cuvant2
+
+    ; done_cuvinte:
+       
+        ; push ebx
+        ; push format_len
+        ; call [printf]
+        ; add esp, 2 * 4
+        
+       
+        ; push edx
+        ; push format_len
+        ; call [printf]
+        ; add esp, 2 * 4
+    
